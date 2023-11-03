@@ -1,0 +1,90 @@
+import time
+
+# Define player attributes
+player = {
+    "name": "Player",
+    "inventory": [],
+}
+
+# Define game locations and interactions
+locations = {
+    "start": {
+        "description": "You wake up in a dimly lit room. A door is in front of you.",
+        "actions": {
+            "open door": "hallway",
+        },
+    },
+    "hallway": {
+        "description": "You're in a long hallway. There are three doors.",
+        "actions": {
+            "door 1": "kitchen",
+            "door 2": "library",
+            "door 3": "bedroom",
+            "go back": "start",
+        },
+    },
+    "kitchen": {
+        "description": "You're in a dusty kitchen. You see a knife on the table.",
+        "actions": {
+            "take knife": lambda: player["inventory"].append("knife"),
+            "go back": "hallway",
+        },
+    },
+    "library": {
+        "description": "You're in a room filled with dusty books. There's a key on the shelf.",
+        "actions": {
+            "take key": lambda: player["inventory"].append("key"),
+            "go back": "hallway",
+        },
+    },
+    "bedroom": {
+        "description": "You're in a dark bedroom. There's a chest at the foot of the bed.",
+        "actions": {
+            "open chest": lambda: player["inventory"].append("treasure"),
+            "go back": "hallway",
+        },
+    },
+}
+
+def show_location(location):
+    print(location["description"])
+    time.sleep(1)
+
+def show_inventory():
+    if player["inventory"]:
+        print("You have the following items in your inventory:")
+        for item in player["inventory"]:
+            print("- " + item)
+    else:
+        print("Your inventory is empty.")
+
+def game_over():
+    print("Game over. Thanks for playing!")
+    exit()
+
+def main():
+    current_location = "start"
+    
+    print("Welcome to the Text Adventure Game!")
+    time.sleep(1)
+    
+    while True:
+        show_location(locations[current_location])
+        show_inventory()
+        
+        action = input("What do you want to do? ").lower()
+        
+        if action == "quit":
+            game_over()
+        
+        if action in locations[current_location]["actions"]:
+            if callable(locations[current_location]["actions"][action]):
+                locations[current_location]["actions"][action]()
+            else:
+                current_location = locations[current_location]["actions"][action]
+        else:
+            print("Invalid action. Try again.")
+            time.sleep(1)
+
+if __name__ == "__main__":
+    main()
